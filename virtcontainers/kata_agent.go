@@ -146,18 +146,28 @@ func (k *kataAgent) init(sandbox *Sandbox, config interface{}) (err error) {
 	default:
 		return fmt.Errorf("Invalid config type")
 	}
-
+	// hack
+	sandbox.config.ProxyType = KataBuiltInProxyType
+	//
 	k.proxy, err = newProxy(sandbox.config.ProxyType)
 	if err != nil {
 		return err
 	}
-
+	//
+	sandbox.config.ShimType = KataBuiltInShimType
+	//
 	k.shim, err = newShim(sandbox.config.ShimType)
 	if err != nil {
 		return err
 	}
 
 	k.proxyBuiltIn = isProxyBuiltIn(sandbox.config.ProxyType)
+	//
+	if k.proxyBuiltIn {
+		k.keepConn = true
+	}
+	//
+		
 
 	// Fetch agent runtime info.
 	if err := sandbox.storage.fetchAgentState(sandbox.id, &k.state); err != nil {
@@ -463,6 +473,7 @@ func (k *kataAgent) startSandbox(sandbox *Sandbox) error {
 		ifcReq := &grpc.UpdateInterfaceRequest{
 			Interface: ifc,
 		}
+		
 		resultingInterface, err := k.sendReq(ifcReq)
 		if err != nil {
 			k.Logger().WithFields(logrus.Fields{
@@ -978,6 +989,7 @@ func (k *kataAgent) connect() error {
 		return nil
 	}
 
+	// here is error
 	client, err := kataclient.NewAgentClient(k.state.URL, k.proxyBuiltIn)
 	if err != nil {
 		return err
@@ -1106,6 +1118,7 @@ func (k *kataAgent) installReqFunc(c *kataclient.AgentClient) {
 	}
 }
 
+// here
 func (k *kataAgent) sendReq(request interface{}) (interface{}, error) {
 	if err := k.connect(); err != nil {
 		return nil, err

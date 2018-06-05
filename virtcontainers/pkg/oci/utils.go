@@ -526,6 +526,9 @@ func ContainerConfig(ocispec CompatOCISpec, bundlePath, cid, console string, det
 		return vc.ContainerConfig{}, err
 	}
 
+	// !!!
+	//
+	//
 	rootfs := ocispec.Root.Path
 	if !filepath.IsAbs(rootfs) {
 		rootfs = filepath.Join(bundlePath, ocispec.Root.Path)

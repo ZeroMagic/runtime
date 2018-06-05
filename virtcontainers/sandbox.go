@@ -921,6 +921,8 @@ func (s *Sandbox) removeNetwork() error {
 	return nil
 }
 
+
+// !!!
 // startVM starts the VM.
 func (s *Sandbox) startVM() error {
 	s.Logger().Info("Starting VM")
