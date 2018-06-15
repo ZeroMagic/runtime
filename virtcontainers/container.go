@@ -989,16 +989,17 @@ func (c *Container) hotplugDrive() error {
 		return err
 	}
 
-	c.Logger().WithFields(logrus.Fields{
-		"device-major": dev.major,
-		"device-minor": dev.minor,
-		"mount-point":  dev.mountPoint,
-	}).Info("device details")
-
 	isDM, err := checkStorageDriver(dev.major, dev.minor)
 	if err != nil {
 		return err
 	}
+
+	c.Logger().WithFields(logrus.Fields{
+		"device-major": dev.major,
+		"device-minor": dev.minor,
+		"mount-point":  dev.mountPoint,
+		"isDM":			isDM,
+	}).Info("device details")
 
 	if !isDM {
 		return nil
