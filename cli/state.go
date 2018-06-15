@@ -42,7 +42,7 @@ func state(containerID string) error {
 
 	// Convert the status to the expected State structure
 	state := oci.StatusToOCIState(status)
-
+	
 	stateJSON, err := json.MarshalIndent(state, "", "  ")
 	if err != nil {
 		return err

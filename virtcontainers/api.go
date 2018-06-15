@@ -508,6 +508,15 @@ func statusContainer(sandbox *Sandbox, containerID string) (ContainerStatus, err
 				}
 			}
 
+			logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
+				"sandboxID":		sandbox.ID(),
+				"containerID":		containerID,
+				"container.state":			container.state,
+				"container.process.Pid":			container.process.Pid,
+				"container.config.RootFs":		container.config.RootFs,
+				"container.config.Annotations":		container.config.Annotations,
+			}).Infof("[/cli/state.go-state]")
+
 			return ContainerStatus{
 				ID:          container.id,
 				State:       container.state,
