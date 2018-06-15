@@ -72,6 +72,12 @@ var createCLICommand = cli.Command{
 			return err
 		}
 
+		logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
+			"console":			console,
+			"bundle":			context.String("bundle"),
+			"oci.runtimeConfig":	runtimeConfig,
+		}).Infof("[/cli/create.go-Action]")
+
 		return create(context.Args().First(),
 			context.String("bundle"),
 			console,
@@ -103,6 +109,11 @@ func create(containerID, bundlePath, console, pidFilePath string, detach bool,
 	if err != nil {
 		return err
 	}
+
+	logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
+		"ociSpec":			ociSpec,
+		"containerType":			containerType,
+	}).Infof("[/cli/create.go-create()]")
 
 	disableOutput := noNeedForOutput(detach, ociSpec.Process.Terminal)
 
@@ -136,6 +147,12 @@ func create(containerID, bundlePath, console, pidFilePath string, detach bool,
 	if ociSpec.Linux != nil {
 		cgroupsDirPath = ociSpec.Linux.CgroupsPath
 	}
+
+	logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
+		"cgroupsPathList":			cgroupsPathList,
+		"cgroupsDirPath":			cgroupsDirPath,
+		"oci.runtimeConfig":	runtimeConfig,
+	}).Infof("[/cli/create.go-create()]")
 
 	if err := createCgroupsFiles(containerID, cgroupsDirPath, cgroupsPathList, process.Pid); err != nil {
 		return err
@@ -232,6 +249,10 @@ func createSandbox(ociSpec oci.CompatOCISpec, runtimeConfig oci.RuntimeConfig,
 	if err != nil {
 		return vc.Process{}, err
 	}
+
+	logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
+		"sandboxConfig":			sandboxConfig,
+	}).Infof("[/cli/create.go-createSandbox()-convert ociConfig to virtcontainers sandbox configuration structure]")
 
 	sandbox, err := vci.CreateSandbox(sandboxConfig)
 	if err != nil {

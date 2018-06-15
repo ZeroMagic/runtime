@@ -21,6 +21,8 @@ import (
 	grpcStatus "google.golang.org/grpc/status"
 
 	agentgrpc "github.com/kata-containers/agent/protocols/grpc"
+
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -50,6 +52,11 @@ func NewAgentClient(sock string, enableYamux bool) (*AgentClient, error) {
 	if err != nil {
 		return nil, err
 	}
+	logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
+		"grpcAddr":		grpcAddr,
+		"parsedAddr":	parsedAddr,
+		"enableYamux":	enableYamux,
+	}).Infof("[/vendor/github.com/kata-containers/agent/protocols/client/client.go-NewAgentClient()]")
 	dialOpts := []grpc.DialOption{grpc.WithInsecure(), grpc.WithBlock()}
 	dialOpts = append(dialOpts, grpc.WithDialer(agentDialer(parsedAddr, enableYamux)))
 	ctx := context.Background()
