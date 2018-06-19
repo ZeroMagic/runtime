@@ -73,9 +73,9 @@ var createCLICommand = cli.Command{
 		}
 
 		logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
-			"console":			console,
-			"bundle":			context.String("bundle"),
-			"oci.runtimeConfig":	runtimeConfig,
+			"console":           console,
+			"bundle":            context.String("bundle"),
+			"oci.runtimeConfig": runtimeConfig,
 		}).Infof("[/cli/create.go-Action]")
 
 		return create(context.Args().First(),
@@ -111,8 +111,8 @@ func create(containerID, bundlePath, console, pidFilePath string, detach bool,
 	}
 
 	logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
-		"ociSpec":			ociSpec,
-		"containerType":			containerType,
+		"ociSpec":       ociSpec,
+		"containerType": containerType,
 	}).Infof("[/cli/create.go-create()]")
 
 	disableOutput := noNeedForOutput(detach, ociSpec.Process.Terminal)
@@ -149,9 +149,9 @@ func create(containerID, bundlePath, console, pidFilePath string, detach bool,
 	}
 
 	logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
-		"cgroupsPathList":			cgroupsPathList,
-		"cgroupsDirPath":			cgroupsDirPath,
-		"oci.runtimeConfig":	runtimeConfig,
+		"cgroupsPathList":   cgroupsPathList,
+		"cgroupsDirPath":    cgroupsDirPath,
+		"oci.runtimeConfig": runtimeConfig,
 	}).Infof("[/cli/create.go-create()]")
 
 	if err := createCgroupsFiles(containerID, cgroupsDirPath, cgroupsPathList, process.Pid); err != nil {
@@ -251,7 +251,7 @@ func createSandbox(ociSpec oci.CompatOCISpec, runtimeConfig oci.RuntimeConfig,
 	}
 
 	logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
-		"sandboxConfig":			sandboxConfig,
+		"sandboxConfig": sandboxConfig,
 	}).Infof("[/cli/create.go-createSandbox()-convert ociConfig to virtcontainers sandbox configuration structure]")
 
 	sandbox, err := vci.CreateSandbox(sandboxConfig)

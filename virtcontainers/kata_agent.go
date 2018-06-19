@@ -452,7 +452,7 @@ func (k *kataAgent) startSandbox(sandbox *Sandbox) error {
 		"sandbox-id": sandbox.id,
 		"proxy-pid":  pid,
 		"proxy-url":  uri,
-		"agentURL":	agentURL,
+		"agentURL":   agentURL,
 	}).Info("proxy started")
 
 	hostname := sandbox.config.Hostname
@@ -468,7 +468,7 @@ func (k *kataAgent) startSandbox(sandbox *Sandbox) error {
 		return err
 	}
 	logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
-		"interfaces":			interfaces,
+		"interfaces": interfaces,
 	}).Infof("[/virtcontainers/kata_agent.go-startSandbox()]")
 	for _, ifc := range interfaces {
 		// send update interface request
@@ -541,7 +541,7 @@ func (k *kataAgent) startSandbox(sandbox *Sandbox) error {
 	}
 
 	logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
-		"Hostname":			hostname,
+		"Hostname":   hostname,
 		"Driver":     kata9pDevType,
 		"Source":     mountGuest9pTag,
 		"MountPoint": kataGuestSharedDir,

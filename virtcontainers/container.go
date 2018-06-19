@@ -998,7 +998,7 @@ func (c *Container) hotplugDrive() error {
 		"device-major": dev.major,
 		"device-minor": dev.minor,
 		"mount-point":  dev.mountPoint,
-		"isDM":			isDM,
+		"isDM":         isDM,
 	}).Info("device details")
 
 	if !isDM {

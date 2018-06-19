@@ -913,8 +913,8 @@ func (s *Sandbox) createNetwork() error {
 	s.networkNS = networkNS
 
 	logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
-		"netNsPath":			netNsPathv,
-		"networkNS":			networkNS,
+		"netNsPath": netNsPathv,
+		"networkNS": networkNS,
 	}).Infof("[/virtcontainers/sandbox.go-createNetwork()]")
 
 	// Store the network
@@ -1125,7 +1125,7 @@ func (s *Sandbox) StatsContainer(containerID string) (ContainerStats, error) {
 func (s *Sandbox) createContainers() error {
 	for _, contConfig := range s.config.Containers {
 		logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
-			"containerConfig":			contConfig,
+			"containerConfig": contConfig,
 		}).Infof("[/virtcontainers/sandbox.go-createContainers()]")
 		newContainer, err := createContainer(s, contConfig)
 		if err != nil {
