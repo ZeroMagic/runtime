@@ -155,17 +155,24 @@ func (k *kataAgent) init(sandbox *Sandbox, config interface{}) (err error) {
 		return fmt.Errorf("Invalid config type")
 	}
 
+	sandbox.config.ProxyType = KataBuiltInProxyType
 	k.proxy, err = newProxy(sandbox.config.ProxyType)
 	if err != nil {
 		return err
 	}
 
+	sandbox.config.ShimType = KataBuiltInShimType
 	k.shim, err = newShim(sandbox.config.ShimType)
 	if err != nil {
 		return err
 	}
 
 	k.proxyBuiltIn = isProxyBuiltIn(sandbox.config.ProxyType)
+
+	if k.proxyBuiltIn {
+			k.keepConn = true
+	}
+		
 
 	// Fetch agent runtime info.
 	if err := sandbox.storage.fetchAgentState(sandbox.id, &k.state); err != nil {
