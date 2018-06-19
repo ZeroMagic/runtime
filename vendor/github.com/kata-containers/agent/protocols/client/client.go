@@ -52,7 +52,11 @@ func NewAgentClient(sock string, enableYamux bool) (*AgentClient, error) {
 	if err != nil {
 		return nil, err
 	}
-	logrus.FieldLogger(logrus.New()).Infof("[/vendor/github.com/kata-containers/agent/protocols/client/client.go-NewAgentClient()]\ngrpcAddr:  ", grpcAddr, "\nparsedAddr:  ", parsedAddr, "\nenableYamux:  ", enableYamux)
+	logrus.FieldLogger(logrus.New()).WithFields(logrus.Fields{
+		"grpcAddr":    grpcAddr,
+		"parsedAddr":  parsedAddr,
+		"enableYamux": enableYamux,
+	}).Infof("[/vendor/github.com/kata-containers/agent/protocols/client/client.go-NewAgentClient()]")
 	dialOpts := []grpc.DialOption{grpc.WithInsecure(), grpc.WithBlock()}
 	dialOpts = append(dialOpts, grpc.WithDialer(agentDialer(parsedAddr, enableYamux)))
 	ctx := context.Background()

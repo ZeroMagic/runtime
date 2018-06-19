@@ -912,8 +912,8 @@ func (s *Sandbox) createNetwork() error {
 	}
 	s.networkNS = networkNS
 
-	logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
-		"netNsPath": netNsPathv,
+	logrus.FieldLogger(logrus.New()).WithFields(logrus.Fields{
+		"netNsPath": netNsPath,
 		"networkNS": networkNS,
 	}).Infof("[/virtcontainers/sandbox.go-createNetwork()]")
 
@@ -1124,7 +1124,7 @@ func (s *Sandbox) StatsContainer(containerID string) (ContainerStats, error) {
 // containers in the guest and starts one shim per container.
 func (s *Sandbox) createContainers() error {
 	for _, contConfig := range s.config.Containers {
-		logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
+		logrus.FieldLogger(logrus.New()).WithFields(logrus.Fields{
 			"containerConfig": contConfig,
 		}).Infof("[/virtcontainers/sandbox.go-createContainers()]")
 		newContainer, err := createContainer(s, contConfig)

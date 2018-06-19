@@ -467,7 +467,7 @@ func (k *kataAgent) startSandbox(sandbox *Sandbox) error {
 	if err != nil {
 		return err
 	}
-	logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
+	logrus.FieldLogger(logrus.New()).WithFields(logrus.Fields{
 		"interfaces": interfaces,
 	}).Infof("[/virtcontainers/kata_agent.go-startSandbox()]")
 	for _, ifc := range interfaces {
@@ -540,7 +540,7 @@ func (k *kataAgent) startSandbox(sandbox *Sandbox) error {
 		SandboxPidns: sandbox.sharePidNs,
 	}
 
-	logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
+	logrus.FieldLogger(logrus.New()).WithFields(logrus.Fields{
 		"Hostname":   hostname,
 		"Driver":     kata9pDevType,
 		"Source":     mountGuest9pTag,

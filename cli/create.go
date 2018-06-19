@@ -72,7 +72,7 @@ var createCLICommand = cli.Command{
 			return err
 		}
 
-		logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
+		logrus.FieldLogger(logrus.New()).WithFields(logrus.Fields{
 			"console":           console,
 			"bundle":            context.String("bundle"),
 			"oci.runtimeConfig": runtimeConfig,
@@ -110,7 +110,7 @@ func create(containerID, bundlePath, console, pidFilePath string, detach bool,
 		return err
 	}
 
-	logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
+	logrus.FieldLogger(logrus.New()).WithFields(logrus.Fields{
 		"ociSpec":       ociSpec,
 		"containerType": containerType,
 	}).Infof("[/cli/create.go-create()]")
@@ -148,7 +148,7 @@ func create(containerID, bundlePath, console, pidFilePath string, detach bool,
 		cgroupsDirPath = ociSpec.Linux.CgroupsPath
 	}
 
-	logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
+	logrus.FieldLogger(logrus.New()).WithFields(logrus.Fields{
 		"cgroupsPathList":   cgroupsPathList,
 		"cgroupsDirPath":    cgroupsDirPath,
 		"oci.runtimeConfig": runtimeConfig,
@@ -250,7 +250,7 @@ func createSandbox(ociSpec oci.CompatOCISpec, runtimeConfig oci.RuntimeConfig,
 		return vc.Process{}, err
 	}
 
-	logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
+	logrus.FieldLogger(logrus.New()).WithFields(logrus.Fields{
 		"sandboxConfig": sandboxConfig,
 	}).Infof("[/cli/create.go-createSandbox()-convert ociConfig to virtcontainers sandbox configuration structure]")
 

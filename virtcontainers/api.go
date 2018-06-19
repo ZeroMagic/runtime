@@ -508,7 +508,7 @@ func statusContainer(sandbox *Sandbox, containerID string) (ContainerStatus, err
 				}
 			}
 
-			logrus.FieldLogger(logrus.New()).WithFields(logrus.FieldLogger{
+			logrus.FieldLogger(logrus.New()).WithFields(logrus.Fields{
 				"sandboxID":                    sandbox.ID(),
 				"containerID":                  containerID,
 				"container.state":              container.state,
