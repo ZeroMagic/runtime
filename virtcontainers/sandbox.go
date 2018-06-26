@@ -721,6 +721,10 @@ func newSandbox(sandboxConfig SandboxConfig) (*Sandbox, error) {
 
 	network := newNetwork(sandboxConfig.NetworkModel)
 
+	logrus.FieldLogger(logrus.New()).WithFields(logrus.Fields{
+		"sandboxConfig":    sandboxConfig,
+	}).Infof("[/virtcontianers.go-newSandbox()]")
+
 	s := &Sandbox{
 		id:              sandboxConfig.ID,
 		hypervisor:      hypervisor,
@@ -738,6 +742,10 @@ func newSandbox(sandboxConfig SandboxConfig) (*Sandbox, error) {
 		shmSize:         sandboxConfig.ShmSize,
 		sharePidNs:      sandboxConfig.SharePidNs,
 	}
+
+	logrus.FieldLogger(logrus.New()).WithFields(logrus.Fields{
+		"sandbox":    s,
+	}).Infof("[/virtcontianers.go-newSandbox()]")
 
 	if err = globalSandboxList.addSandbox(s); err != nil {
 		return nil, err
