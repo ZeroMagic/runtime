@@ -16,6 +16,7 @@ import (
 
 	"github.com/hashicorp/yamux"
 	"github.com/mdlayher/vsock"
+	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	grpcStatus "google.golang.org/grpc/status"
@@ -64,7 +65,7 @@ func NewAgentClient(sock string, enableYamux bool) (*AgentClient, error) {
 	defer cancel()
 	conn, err := grpc.DialContext(ctx, grpcAddr, dialOpts...)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrapf(err, "Could not new agent client: grpcAddr: ", grpcAddr, "; parsedAddr: ", parsedAddr, "; enableYamux: ", enableYamux)
 	}
 
 	return &AgentClient{
