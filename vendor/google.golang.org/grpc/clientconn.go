@@ -41,6 +41,8 @@ import (
 	_ "google.golang.org/grpc/resolver/passthrough" // To register passthrough resolver.
 	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/transport"
+
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -492,19 +494,35 @@ func DialContext(ctx context.Context, target string, opts ...DialOption) (conn *
 		return nil, fmt.Errorf("failed to build resolver: %v", err)
 	}
 
+	logrus.FieldLogger(logrus.New()).WithFields(logrus.Fields{
+		"clientConn":	cc,
+	}).Infof("[/vendor/google.golang.org/grpc/clientconn.go-DialContext()]", time.Now())
 	// A blocking dial blocks until the clientConn is ready.
 	if cc.dopts.block {
 		for {
 			s := cc.GetState()
+			logrus.FieldLogger(logrus.New()).WithFields(logrus.Fields{
+				"clientConn state":	s,
+				"connectivity.Ready":    connectivity.Ready,
+			}).Infof("[/vendor/google.golang.org/grpc/clientconn.go-DialContext()]", time.Now())
 			if s == connectivity.Ready {
 				break
 			}
 			if !cc.WaitForStateChange(ctx, s) {
 				// ctx got timeout or canceled.
+				logrus.FieldLogger(logrus.New()).WithFields(logrus.Fields{
+					"ctx.Err()":	ctx.Err(),
+					"clientConn state":	s,
+				}).Infof("[/vendor/google.golang.org/grpc/clientconn.go-DialContext()]", time.Now())
 				return nil, ctx.Err()
 			}
 		}
 	}
+
+	logrus.FieldLogger(logrus.New()).WithFields(logrus.Fields{
+		"clientConn":	cc,
+		"clientConn state":	cc.GetState(),
+	}).Infof("[/vendor/google.golang.org/grpc/clientconn.go-DialContext()]", time.Now())
 
 	return cc, nil
 }
