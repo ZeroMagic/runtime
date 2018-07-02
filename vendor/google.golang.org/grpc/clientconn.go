@@ -446,6 +446,9 @@ func DialContext(ctx context.Context, target string, opts ...DialOption) (conn *
 	if cc.dopts.bs == nil {
 		cc.dopts.bs = DefaultBackoffConfig
 	}
+	logrus.FieldLogger(logrus.New()).WithFields(logrus.Fields{
+		"clientConn":	cc,
+	}).Infof("[/vendor/google.golang.org/grpc/clientconn.go-DialContext()]", time.Now())	
 	cc.parsedTarget = parseTarget(cc.target)
 	creds := cc.dopts.copts.TransportCredentials
 	if creds != nil && creds.Info().ServerName != "" {
