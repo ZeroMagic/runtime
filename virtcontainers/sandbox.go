@@ -721,10 +721,6 @@ func newSandbox(sandboxConfig SandboxConfig) (*Sandbox, error) {
 
 	network := newNetwork(sandboxConfig.NetworkModel)
 
-	logrus.FieldLogger(logrus.New()).WithFields(logrus.Fields{
-		"sandboxConfig":  	sandboxConfig,
-	}).Infof("##### sandbox createSandbox #####")
-
 	s := &Sandbox{
 		id:              sandboxConfig.ID,
 		hypervisor:      hypervisor,
@@ -753,6 +749,10 @@ func newSandbox(sandboxConfig SandboxConfig) (*Sandbox, error) {
 			globalSandboxList.removeSandbox(s.id)
 		}
 	}()
+
+	s.Logger().WithFields(logrus.Fields{
+		"sandboxConfig":  	sandboxConfig,
+	}).Infof("##### sandbox createSandbox #####")
 
 	if err = s.storage.createAllResources(s); err != nil {
 		return nil, err
