@@ -669,6 +669,11 @@ func createAssets(sandboxConfig *SandboxConfig) error {
 // to physically create that sandbox i.e. starts a VM for that sandbox to eventually
 // be started.
 func createSandbox(sandboxConfig SandboxConfig) (*Sandbox, error) {
+
+	logrus.FieldLogger(logrus.New()).WithFields(logrus.Fields{
+		"sandboxConfig":  	sandboxConfig,
+	}).Info("##### sandbox createSandbox #####")
+
 	if err := createAssets(&sandboxConfig); err != nil {
 		return nil, err
 	}
@@ -982,6 +987,9 @@ func (s *Sandbox) newContainers() error {
 
 // CreateContainer creates a new container in the sandbox
 func (s *Sandbox) CreateContainer(contConfig ContainerConfig) (VCContainer, error) {
+	logrus.FieldLogger(logrus.New()).WithFields(logrus.Fields{
+		"contConfig":  	contConfig,
+	}).Info("##### sandbox CreateContainer #####")
 	// Create the container.
 	c, err := createContainer(s, contConfig)
 	if err != nil {
