@@ -801,24 +801,3 @@ func (s *service) getContainer(id string) (*container, error) {
 
 	return c, nil
 }
-
-func (s *service) getContainerStatus(containerID string) (task.Status, error) {
-	cStatus, err := s.sandbox.StatusContainer(containerID)
-	if err != nil {
-		return task.StatusUnknown, err
-	}
-
-	var status task.Status
-	switch cStatus.State.State {
-	case vc.StateReady:
-		status = task.StatusCreated
-	case vc.StateRunning:
-		status = task.StatusRunning
-	case vc.StatePaused:
-		status = task.StatusPaused
-	case vc.StateStopped:
-		status = task.StatusStopped
-	}
-
-	return status, nil
-}
