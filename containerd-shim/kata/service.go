@@ -142,6 +142,7 @@ func newCommand(ctx context.Context, containerdBinary, id, containerdAddress str
 		"-address", containerdAddress,
 		"-publish-binary", containerdBinary,
 		"-id", id,
+		"-debug",
 	}
 	cmd := sysexec.Command(self, args...)
 	cmd.Dir = cwd

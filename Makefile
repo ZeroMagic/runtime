@@ -135,7 +135,7 @@ DEFHOTPLUGVFIOONROOTBUS := false
 SED = sed
 
 CLI_DIR = cli
-SHIMV2 = containerd-shim-kata-v2
+SHIMV2 = containerd-shim-kata-v1
 SHIMV2_OUTPUT = $(CURDIR)/$(SHIMV2)
 SHIMV2_DIR = $(CLI_DIR)/$(SHIMV2)
 
