@@ -257,10 +257,6 @@ func (s *service) Cleanup(ctx context.Context) (*taskAPI.DeleteResponse, error) 
 		return nil, err
 	}
 
-	//get the bundle parent path, thus we can form a specific
-	//container's bundle path by "bundleParentPath/id"
-	bundleParentPath := filepath.Dir(path)
-
 	ociSpec, err := oci.ParseConfigJSON(path)
 	if err != nil {
 		return nil, err
@@ -273,7 +269,7 @@ func (s *service) Cleanup(ctx context.Context) (*taskAPI.DeleteResponse, error) 
 
 	switch containerType {
 	case vc.PodSandbox:
-		err = cleanupSandbox(s.id, bundleParentPath)
+		err = cleanupSandbox(s.id)
 		if err != nil {
 			return nil, err
 		}
@@ -285,7 +281,11 @@ func (s *service) Cleanup(ctx context.Context) (*taskAPI.DeleteResponse, error) 
 	}, nil
 }
 
-func cleanupSandbox(id, bundleParentPath string) error {
+func cleanupSandbox(id string) error {
+	logrus.WithField("Service", "Cleanup").Infof("Cleanup sandbox %s", id)
+
+	rootfs := make(map[string]string)
+
 	sandbox, err := vci.FetchSandbox(id)
 	if err != nil {
 		return err
@@ -293,6 +293,17 @@ func cleanupSandbox(id, bundleParentPath string) error {
 
 	containers := sandbox.GetAllContainers()
 	status := sandbox.Status()
+
+	for _, c := range containers {
+		status, err := sandbox.StatusContainer(c.ID())
+		if err != nil {
+			logrus.WithError(err).Warnf("failed to get container %s status", c.ID())
+			continue
+		}
+		if status.RootFs != "" {
+			rootfs[c.ID()] = status.RootFs
+		}
+	}
 
 	if oci.StateToOCIState(status.State) != oci.StateStopped {
 		if _, err := vci.StopSandbox(id); err != nil {
@@ -304,10 +315,11 @@ func cleanupSandbox(id, bundleParentPath string) error {
 		logrus.WithError(err).Warn("failed to remove kata container")
 	}
 
-	for _, c := range containers {
-		rootfs := filepath.Join(bundleParentPath, c.ID(), "rootfs")
-		if err := mount.UnmountAll(rootfs, 0); err != nil {
-			logrus.WithError(err).Warnf("failed to cleanup container %s rootfs mount", c.ID())
+	for id, fs := range rootfs {
+		logrus.WithField("Service", "Cleanup").Infof("Cleanup container %s rootfs %s", id, fs)
+
+		if err := mount.UnmountAll(fs, 0); err != nil {
+			logrus.WithError(err).Warnf("failed to cleanup container %s rootfs %s", id, fs)
 		}
 	}
 
