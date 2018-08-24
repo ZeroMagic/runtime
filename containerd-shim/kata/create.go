@@ -19,22 +19,22 @@ import (
 )
 
 func create(s *service, containerID, bundlePath, netns string, detach bool,
-	runtimeConfig *oci.RuntimeConfig) (vc.VCContainer, error) {
+	runtimeConfig *oci.RuntimeConfig) (vc.ContainerType, error) {
 	var err error
 
 	// Checks the MUST and MUST NOT from OCI runtime specification
 	if bundlePath, err = validCreateParams(containerID, bundlePath); err != nil {
-		return nil, err
+		return "", err
 	}
 
 	ociSpec, err := oci.ParseConfigJSON(bundlePath)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	containerType, err := ociSpec.ContainerType()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	//In the sandbox, the containers will only
@@ -78,27 +78,27 @@ func create(s *service, containerID, bundlePath, netns string, detach bool,
 	switch containerType {
 	case vc.PodSandbox:
 		if s.sandbox != nil {
-			return nil, fmt.Errorf("cannot create another sandbox in sandbox: %s", s.sandbox.ID())
+			return "", fmt.Errorf("cannot create another sandbox in sandbox: %s", s.sandbox.ID())
 		}
 
 		c, err = createSandbox(ociSpec, *runtimeConfig, containerID, bundlePath, disableOutput)
 		if err != nil {
-			return nil, err
+			return "", err
 		}
 		s.sandbox = c.Sandbox()
 
 	case vc.PodContainer:
 		if s.sandbox == nil {
-			return nil, fmt.Errorf("BUG: Cannot start the container, since the sandbox hasn't been created")
+			return "", fmt.Errorf("BUG: Cannot start the container, since the sandbox hasn't been created")
 		}
 
-		c, err = createContainer(s.sandbox, ociSpec, containerID, bundlePath, disableOutput)
+		err = createContainer(s.sandbox, ociSpec, containerID, bundlePath, disableOutput)
 		if err != nil {
-			return nil, err
+			return "", err
 		}
 	}
 
-	return c, nil
+	return containerType, nil
 }
 
 func setFactory(runtimeConfig *oci.RuntimeConfig) {
@@ -220,10 +220,6 @@ func createSandbox(ociSpec oci.CompatOCISpec, runtimeConfig oci.RuntimeConfig,
 		return nil, fmt.Errorf("BUG: Container list from sandbox is wrong, expecting only one container, found %d containers", len(containers))
 	}
 
-	if err := addContainerIDMapping(containerID, sandbox.ID()); err != nil {
-		return nil, err
-	}
-
 	return containers[0], nil
 }
 
@@ -242,23 +238,19 @@ func setEphemeralStorageType(ociSpec oci.CompatOCISpec) oci.CompatOCISpec {
 }
 
 func createContainer(sandbox vc.VCSandbox, ociSpec oci.CompatOCISpec, containerID, bundlePath string,
-	disableOutput bool) (vc.VCContainer, error) {
+	disableOutput bool) error {
 
 	ociSpec = setEphemeralStorageType(ociSpec)
 
 	contConfig, err := oci.ContainerConfig(ociSpec, bundlePath, containerID, "", disableOutput)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	c, err := sandbox.CreateContainer(contConfig)
+	_, err = sandbox.CreateContainer(contConfig)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	if err := addContainerIDMapping(containerID, sandbox.ID()); err != nil {
-		return nil, err
-	}
-
-	return c, nil
+	return nil
 }

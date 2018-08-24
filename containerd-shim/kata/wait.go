@@ -40,9 +40,9 @@ func wait(s *service, c *container, execID string) (int32, error) {
 	}
 
 	if execID == "" {
-		c.exitch <- uint32(ret)
+		c.exitCh <- uint32(ret)
 	} else {
-		execs.exitch <- uint32(ret)
+		execs.exitCh <- uint32(ret)
 	}
 
 	timeStamp := time.Now()

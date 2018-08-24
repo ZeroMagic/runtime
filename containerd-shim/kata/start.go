@@ -9,28 +9,27 @@ import (
 	"context"
 	"fmt"
 	"github.com/containerd/containerd/api/types/task"
-	"github.com/kata-containers/runtime/virtcontainers/pkg/oci"
 )
 
 func startContainer(ctx context.Context, s *service, c *container) error {
 	//start a container
-	// Checks the MUST and MUST NOT from OCI runtime specification
-	status, sandboxID, err := getExistingContainerInfo(c.id)
-	if err != nil {
+	if c.cType == "" {
+		err := fmt.Errorf("Bug, the container %s type is empty", c.id)
 		return err
 	}
 
-	containerType, err := oci.GetContainerType(status.Annotations)
-	if err != nil {
+	if s.sandbox == nil {
+		err := fmt.Errorf("Bug, the sandbox hasn't been created for this container %s", c.id)
 		return err
 	}
-	if containerType.IsSandbox() {
-		_, err := vci.StartSandbox(sandboxID)
+
+	if c.cType.IsSandbox() {
+		_, err := vci.StartSandbox(s.sandbox.ID())
 		if err != nil {
 			return err
 		}
 	} else {
-		_, err = vci.StartContainer(sandboxID, c.id)
+		_, err := vci.StartContainer(s.sandbox.ID(), c.id)
 		if err != nil {
 			return err
 		}

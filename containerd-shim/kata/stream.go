@@ -103,7 +103,7 @@ func ioCopy(exitch chan struct{}, tty *ttyIO, stdinPipe io.WriteCloser, stdoutPi
 		go func() {
 			p := bufPool.Get().(*[]byte)
 			defer bufPool.Put(p)
-			_, _ = io.CopyBuffer(tty.Stderr, stderrPipe, *p)
+			io.CopyBuffer(tty.Stderr, stderrPipe, *p)
 			wg.Done()
 		}()
 	}

@@ -305,10 +305,6 @@ func cleanupSandbox(id, bundleParentPath string) error {
 	}
 
 	for _, c := range containers {
-		if err := delContainerIDMapping(id); err != nil {
-			logrus.WithError(err).Warnf("failed to remove kata container %s id mapping files", c.ID())
-		}
-
 		rootfs := filepath.Join(bundleParentPath, c.ID(), "rootfs")
 		if err := mount.UnmountAll(rootfs, 0); err != nil {
 			logrus.WithError(err).Warnf("failed to cleanup container %s rootfs mount", c.ID())
@@ -347,13 +343,13 @@ func (s *service) Create(ctx context.Context, r *taskAPI.CreateTaskRequest) (_ *
 		}
 	}
 
-	_, err = create(s, r.ID, r.Bundle, ns, !r.Terminal, s.config)
+	containerType, err := create(s, r.ID, r.Bundle, ns, !r.Terminal, s.config)
 	if err != nil {
 		return nil, err
 	}
 
 	pid := s.pid()
-	container, err := newContainer(s, r, pid)
+	container, err := newContainer(s, r, pid, containerType)
 	if err != nil {
 		return nil, err
 	}
@@ -755,13 +751,13 @@ func (s *service) Wait(ctx context.Context, r *taskAPI.WaitRequest) (*taskAPI.Wa
 
 	//wait for container
 	if r.ExecID == "" {
-		ret = <-c.exitch
+		ret = <-c.exitCh
 	} else { //wait for exec
 		execs, err := c.getExec(r.ExecID)
 		if err != nil {
 			return nil, err
 		}
-		ret = <-execs.exitch
+		ret = <-execs.exitCh
 	}
 
 	return &taskAPI.WaitResponse{

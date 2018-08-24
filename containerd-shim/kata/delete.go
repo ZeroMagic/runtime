@@ -35,10 +35,6 @@ func deleteContainer(s *service, c *container) error {
 		logrus.WithError(err).Warn("failed to cleanup rootfs mount")
 	}
 
-	if err := delContainerIDMapping(c.id); err != nil {
-		return err
-	}
-
 	delete(s.processes, c.pid)
 	delete(s.containers, c.id)
 

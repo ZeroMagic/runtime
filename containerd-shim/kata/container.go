@@ -9,6 +9,7 @@ import (
 	"github.com/containerd/containerd/api/types/task"
 	"github.com/containerd/containerd/errdefs"
 	taskAPI "github.com/containerd/containerd/runtime/v2/task"
+	vc "github.com/kata-containers/runtime/virtcontainers"
 	"sync"
 	"time"
 )
@@ -19,12 +20,13 @@ type container struct {
 	time     time.Time
 	execs    map[string]*exec
 	exitIOch chan struct{}
-	exitch   chan uint32
+	exitCh   chan uint32
 	id       string
 	stdin    string
 	stdout   string
 	stderr   string
 	bundle   string
+	cType    vc.ContainerType
 	mu       sync.Mutex
 	pid      uint32
 	exit     uint32
@@ -32,7 +34,7 @@ type container struct {
 	terminal bool
 }
 
-func newContainer(s *service, r *taskAPI.CreateTaskRequest, pid uint32) (*container, error) {
+func newContainer(s *service, r *taskAPI.CreateTaskRequest, pid uint32, containerType vc.ContainerType) (*container, error) {
 	if r == nil {
 		return nil, errdefs.ToGRPCf(errdefs.ErrInvalidArgument, " CreateTaskRequest points to nil")
 	}
@@ -46,10 +48,11 @@ func newContainer(s *service, r *taskAPI.CreateTaskRequest, pid uint32) (*contai
 		stdout:   r.Stdout,
 		stderr:   r.Stderr,
 		terminal: r.Terminal,
+		cType:    containerType,
 		execs:    make(map[string]*exec),
 		status:   task.StatusCreated,
 		exitIOch: make(chan struct{}),
-		exitch:   make(chan uint32, 1),
+		exitCh:   make(chan uint32, 1),
 		time:     time.Now(),
 	}
 	return c, nil
