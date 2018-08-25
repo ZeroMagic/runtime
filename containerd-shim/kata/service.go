@@ -165,6 +165,9 @@ func (s *service) StartShim(ctx context.Context, id, containerdBinary, container
 		return "", err
 	}
 	if address != "" {
+		if err := cdshim.WriteAddress("address", address); err != nil {
+			return "", err
+		}
 		return address, nil
 	}
 
@@ -325,6 +328,13 @@ func cleanupSandbox(id string) error {
 
 		if err := mount.UnmountAll(fs, 0); err != nil {
 			logrus.WithError(err).Warnf("failed to cleanup container %s rootfs %s", id, fs)
+		}
+
+		//cleanup the container's bundle path
+		bundlePath := filepath.Dir(fs)
+		err = os.RemoveAll(bundlePath)
+		if err != nil {
+			logrus.WithError(err).Warn("failed to cleanup bundle path %s", bundlePath)
 		}
 	}
 
