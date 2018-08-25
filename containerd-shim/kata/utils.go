@@ -114,11 +114,11 @@ func getAddress(ctx context.Context, bundlePath, id string) (string, error) {
 	return "", nil
 }
 
-func cleanupContainer(sid, cid, bundlePath string) error {
+func cleanupContainer(ctx context.Context, sid, cid, bundlePath string) error {
 	logrus.WithField("Service", "Cleanup").Infof("Cleanup container %s", cid)
 
 	rootfs := filepath.Join(bundlePath, "rootfs")
-	sandbox, err := vci.FetchSandbox(sid)
+	sandbox, err := vci.FetchSandbox(ctx, sid)
 	if err != nil {
 		return err
 	}
@@ -130,19 +130,19 @@ func cleanupContainer(sid, cid, bundlePath string) error {
 	}
 
 	if oci.StateToOCIState(status.State) != oci.StateStopped {
-		err := vci.KillContainer(sid, cid, syscall.SIGKILL, true)
+		err := vci.KillContainer(ctx, sid, cid, syscall.SIGKILL, true)
 		if err != nil {
 			logrus.WithError(err).Warnf("failed to kill container %s", cid)
 			return err
 		}
 	}
 
-	if _, err = vci.StopContainer(sid, cid); err != nil {
+	if _, err = vci.StopContainer(ctx, sid, cid); err != nil {
 		logrus.WithError(err).Warnf("failed to stop container %s", cid)
 		return err
 	}
 
-	if _, err := vci.DeleteContainer(sid, cid); err != nil {
+	if _, err := vci.DeleteContainer(ctx, sid, cid); err != nil {
 		logrus.WithError(err).Warnf("failed to remove container %s", cid)
 	}
 
@@ -151,13 +151,13 @@ func cleanupContainer(sid, cid, bundlePath string) error {
 	}
 
 	if len(sandbox.GetAllContainers()) == 0 {
-		_, err = vci.StopSandbox(sid)
+		_, err = vci.StopSandbox(ctx, sid)
 		if err != nil {
 			logrus.WithError(err).Warnf("failed to stop sandbox %s", sid)
 			return err
 		}
 
-		_, err = vci.DeleteSandbox(sid)
+		_, err = vci.DeleteSandbox(ctx, sid)
 		if err != nil {
 			logrus.WithError(err).Warnf("failed to delete sandbox %s", sid)
 			return err

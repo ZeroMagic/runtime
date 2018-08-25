@@ -6,26 +6,27 @@
 package kata
 
 import (
+	"context"
 	"github.com/containerd/containerd/mount"
 	vc "github.com/kata-containers/runtime/virtcontainers"
 	"github.com/sirupsen/logrus"
 	"path"
 )
 
-func deleteContainer(s *service, c *container) error {
+func deleteContainer(ctx context.Context, s *service, c *container) error {
 
-	status, err := vci.StatusContainer(s.sandbox.ID(), c.id)
+	status, err := vci.StatusContainer(ctx, s.sandbox.ID(), c.id)
 	if err != nil {
 		return err
 	}
 	if status.State.State != vc.StateStopped {
-		_, err = vci.StopContainer(s.sandbox.ID(), c.id)
+		_, err = vci.StopContainer(ctx, s.sandbox.ID(), c.id)
 		if err != nil {
 			return err
 		}
 	}
 
-	_, err = vci.DeleteContainer(s.sandbox.ID(), c.id)
+	_, err = vci.DeleteContainer(ctx, s.sandbox.ID(), c.id)
 	if err != nil {
 		return err
 	}

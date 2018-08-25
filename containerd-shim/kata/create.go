@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"strings"
 
+	"context"
 	vc "github.com/kata-containers/runtime/virtcontainers"
 	vf "github.com/kata-containers/runtime/virtcontainers/factory"
 	"github.com/kata-containers/runtime/virtcontainers/pkg/oci"
@@ -18,7 +19,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func create(s *service, containerID, bundlePath, netns string, detach bool,
+func create(ctx context.Context, s *service, containerID, bundlePath, netns string, detach bool,
 	runtimeConfig *oci.RuntimeConfig) (vc.ContainerType, error) {
 	var err error
 
@@ -70,7 +71,7 @@ func create(s *service, containerID, bundlePath, netns string, detach bool,
 		}
 	}
 
-	setFactory(runtimeConfig)
+	setFactory(ctx, runtimeConfig)
 
 	disableOutput := noNeedForOutput(detach, ociSpec.Process.Terminal)
 
@@ -81,7 +82,7 @@ func create(s *service, containerID, bundlePath, netns string, detach bool,
 			return "", fmt.Errorf("cannot create another sandbox in sandbox: %s", s.sandbox.ID())
 		}
 
-		c, err = createSandbox(ociSpec, *runtimeConfig, containerID, bundlePath, disableOutput)
+		c, err = createSandbox(ctx, ociSpec, *runtimeConfig, containerID, bundlePath, disableOutput)
 		if err != nil {
 			return "", err
 		}
@@ -101,7 +102,7 @@ func create(s *service, containerID, bundlePath, netns string, detach bool,
 	return containerType, nil
 }
 
-func setFactory(runtimeConfig *oci.RuntimeConfig) {
+func setFactory(ctx context.Context, runtimeConfig *oci.RuntimeConfig) {
 	if runtimeConfig.FactoryConfig.Template {
 		factoryConfig := vf.Config{
 			Template: true,
@@ -113,16 +114,16 @@ func setFactory(runtimeConfig *oci.RuntimeConfig) {
 			},
 		}
 		logrus.WithField("factory", factoryConfig).Info("load vm factory")
-		f, err := vf.NewFactory(factoryConfig, true)
+		f, err := vf.NewFactory(ctx, factoryConfig, true)
 		if err != nil {
 			logrus.WithError(err).Warn("load vm factory failed, about to create new one")
-			f, err = vf.NewFactory(factoryConfig, false)
+			f, err = vf.NewFactory(ctx, factoryConfig, false)
 			if err != nil {
 				logrus.WithError(err).Warn("create vm factory failed")
 			}
 		}
 		if err != nil {
-			vci.SetFactory(f)
+			vci.SetFactory(ctx, f)
 		}
 	}
 }
@@ -195,7 +196,7 @@ func setKernelParams(containerID string, runtimeConfig *oci.RuntimeConfig) error
 	return nil
 }
 
-func createSandbox(ociSpec oci.CompatOCISpec, runtimeConfig oci.RuntimeConfig,
+func createSandbox(ctx context.Context, ociSpec oci.CompatOCISpec, runtimeConfig oci.RuntimeConfig,
 	containerID, bundlePath string, disableOutput bool) (vc.VCContainer, error) {
 
 	err := setKernelParams(containerID, &runtimeConfig)
@@ -210,7 +211,7 @@ func createSandbox(ociSpec oci.CompatOCISpec, runtimeConfig oci.RuntimeConfig,
 
 	sandboxConfig.Stateful = true
 
-	sandbox, err := vci.CreateSandbox(sandboxConfig)
+	sandbox, err := vci.CreateSandbox(ctx, sandboxConfig)
 	if err != nil {
 		return nil, err
 	}

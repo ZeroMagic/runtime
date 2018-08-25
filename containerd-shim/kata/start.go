@@ -24,12 +24,12 @@ func startContainer(ctx context.Context, s *service, c *container) error {
 	}
 
 	if c.cType.IsSandbox() {
-		_, err := vci.StartSandbox(s.sandbox.ID())
+		_, err := vci.StartSandbox(ctx, s.sandbox.ID())
 		if err != nil {
 			return err
 		}
 	} else {
-		_, err := vci.StartContainer(s.sandbox.ID(), c.id)
+		_, err := vci.StartContainer(ctx, s.sandbox.ID(), c.id)
 		if err != nil {
 			return err
 		}

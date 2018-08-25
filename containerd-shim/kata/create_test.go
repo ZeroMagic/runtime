@@ -30,12 +30,7 @@ func TestCreateCreateSandboxSuccess(t *testing.T) {
 		},
 	}
 
-	path, err := ioutil.TempDir("", "containers-mapping")
-	assert.NoError(err)
-	defer os.RemoveAll(path)
-	ctrsMapTreePath = path
-
-	testingImpl.CreateSandboxFunc = func(sandboxConfig vc.SandboxConfig) (vc.VCSandbox, error) {
+	testingImpl.CreateSandboxFunc = func(ctx context.Context, sandboxConfig vc.SandboxConfig) (vc.VCSandbox, error) {
 		return sandbox, nil
 	}
 
@@ -97,11 +92,6 @@ func TestCreateCreateSandboxSuccess(t *testing.T) {
 func TestCreateCreateSandboxFail(t *testing.T) {
 	assert := assert.New(t)
 
-	path, err := ioutil.TempDir("", "containers-mapping")
-	assert.NoError(err)
-	defer os.RemoveAll(path)
-	ctrsMapTreePath = path
-
 	tmpdir, err := ioutil.TempDir("", "")
 	assert.NoError(err)
 	defer os.RemoveAll(tmpdir)
@@ -144,11 +134,6 @@ func TestCreateCreateSandboxFail(t *testing.T) {
 
 func TestCreateCreateSandboxConfigFail(t *testing.T) {
 	assert := assert.New(t)
-
-	path, err := ioutil.TempDir("", "containers-mapping")
-	assert.NoError(err)
-	defer os.RemoveAll(path)
-	ctrsMapTreePath = path
 
 	tmpdir, err := ioutil.TempDir("", "")
 	assert.NoError(err)
@@ -206,12 +191,7 @@ func TestCreateCreateContainerSuccess(t *testing.T) {
 		MockID: testSandboxID,
 	}
 
-	path, err := ioutil.TempDir("", "containers-mapping")
-	assert.NoError(err)
-	defer os.RemoveAll(path)
-	ctrsMapTreePath = path
-
-	testingImpl.CreateContainerFunc = func(sandboxID string, containerConfig vc.ContainerConfig) (vc.VCSandbox, vc.VCContainer, error) {
+	testingImpl.CreateContainerFunc = func(ctx context.Context, sandboxID string, containerConfig vc.ContainerConfig) (vc.VCSandbox, vc.VCContainer, error) {
 		return sandbox, &vcmock.Container{}, nil
 	}
 
@@ -268,11 +248,6 @@ func TestCreateCreateContainerSuccess(t *testing.T) {
 func TestCreateCreateContainerFail(t *testing.T) {
 	assert := assert.New(t)
 
-	path, err := ioutil.TempDir("", "containers-mapping")
-	assert.NoError(err)
-	defer os.RemoveAll(path)
-	ctrsMapTreePath = path
-
 	tmpdir, err := ioutil.TempDir("", "")
 	assert.NoError(err)
 	defer os.RemoveAll(tmpdir)
@@ -325,12 +300,7 @@ func TestCreateCreateContainerConfigFail(t *testing.T) {
 		MockID: testSandboxID,
 	}
 
-	path, err := ioutil.TempDir("", "containers-mapping")
-	assert.NoError(err)
-	defer os.RemoveAll(path)
-	ctrsMapTreePath = path
-
-	testingImpl.CreateContainerFunc = func(sandboxID string, containerConfig vc.ContainerConfig) (vc.VCSandbox, vc.VCContainer, error) {
+	testingImpl.CreateContainerFunc = func(ctx context.Context, sandboxID string, containerConfig vc.ContainerConfig) (vc.VCSandbox, vc.VCContainer, error) {
 		return sandbox, &vcmock.Container{}, nil
 	}
 

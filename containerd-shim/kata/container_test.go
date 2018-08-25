@@ -14,7 +14,7 @@ import (
 func TestNewContainer(t *testing.T) {
 	assert := assert.New(t)
 
-	_, err := newContainer(nil, nil, TestPid)
+	_, err := newContainer(nil, nil, TestPid, "")
 
 	assert.Error(err)
 }
@@ -24,7 +24,7 @@ func TestGetExec(t *testing.T) {
 
 	r := &taskAPI.CreateTaskRequest{}
 
-	c, err := newContainer(nil, r, TestPid)
+	c, err := newContainer(nil, r, TestPid, "")
 	assert.NoError(err)
 
 	_, err = c.getExec("")

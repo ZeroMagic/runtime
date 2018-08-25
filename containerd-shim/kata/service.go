@@ -79,7 +79,7 @@ func New(ctx context.Context, id string, publisher events.Publisher) (cdshim.Shi
 
 	go s.forward(publisher)
 
-	vci.SetLogger(logrus.WithField("ID", id))
+	vci.SetLogger(ctx, logrus.WithField("ID", id))
 
 	return s, nil
 }
@@ -278,7 +278,7 @@ func (s *service) Cleanup(ctx context.Context) (*taskAPI.DeleteResponse, error) 
 
 	switch containerType {
 	case vc.PodSandbox:
-		err = cleanupContainer(s.id, s.id, path)
+		err = cleanupContainer(ctx, s.id, s.id, path)
 		if err != nil {
 			return nil, err
 		}
@@ -288,7 +288,7 @@ func (s *service) Cleanup(ctx context.Context) (*taskAPI.DeleteResponse, error) 
 			return nil, err
 		}
 
-		err = cleanupContainer(sandboxID, s.id, path)
+		err = cleanupContainer(ctx, sandboxID, s.id, path)
 		if err != nil {
 			return nil, err
 		}
@@ -329,7 +329,7 @@ func (s *service) Create(ctx context.Context, r *taskAPI.CreateTaskRequest) (_ *
 		}
 	}
 
-	containerType, err := create(s, r.ID, r.Bundle, ns, !r.Terminal, s.config)
+	containerType, err := create(ctx, s, r.ID, r.Bundle, ns, !r.Terminal, s.config)
 	if err != nil {
 		return nil, err
 	}
@@ -392,7 +392,7 @@ func (s *service) Delete(ctx context.Context, r *taskAPI.DeleteRequest) (*taskAP
 	}
 
 	if r.ExecID == "" {
-		err = deleteContainer(s, c)
+		err = deleteContainer(ctx, s, c)
 		if err != nil {
 			return nil, err
 		}
@@ -529,7 +529,7 @@ func (s *service) Pause(ctx context.Context, r *taskAPI.PauseRequest) (*ptypes.E
 
 	c.status = task.StatusPausing
 
-	err = vci.PauseContainer(r.ID, c.id)
+	err = vci.PauseContainer(ctx, r.ID, c.id)
 	if err == nil {
 		c.status = task.StatusPaused
 	} else {
@@ -549,7 +549,7 @@ func (s *service) Resume(ctx context.Context, r *taskAPI.ResumeRequest) (*ptypes
 		return nil, err
 	}
 
-	err = vci.ResumeContainer(r.ID, c.id)
+	err = vci.ResumeContainer(ctx, r.ID, c.id)
 	if err == nil {
 		c.status = task.StatusRunning
 	} else {
@@ -669,13 +669,13 @@ func (s *service) Shutdown(ctx context.Context, r *taskAPI.ShutdownRequest) (*pt
 	if len(s.containers) == 0 {
 		defer os.Exit(0)
 
-		_, err := vci.StopSandbox(s.sandbox.ID())
+		_, err := vci.StopSandbox(ctx, s.sandbox.ID())
 		if err != nil {
 			s.mu.Unlock()
 			return empty, err
 		}
 
-		_, err = vci.DeleteSandbox(s.sandbox.ID())
+		_, err = vci.DeleteSandbox(ctx, s.sandbox.ID())
 		if err != nil {
 			s.mu.Unlock()
 			return empty, err
