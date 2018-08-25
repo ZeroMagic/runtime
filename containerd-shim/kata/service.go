@@ -283,7 +283,6 @@ func (s *service) Cleanup(ctx context.Context) (*taskAPI.DeleteResponse, error) 
 
 func cleanupSandbox(id string) error {
 	logrus.WithField("Service", "Cleanup").Infof("Cleanup sandbox %s", id)
-
 	rootfs := make(map[string]string)
 
 	sandbox, err := vci.FetchSandbox(id)
@@ -292,8 +291,6 @@ func cleanupSandbox(id string) error {
 	}
 
 	containers := sandbox.GetAllContainers()
-	status := sandbox.Status()
-
 	for _, c := range containers {
 		status, err := sandbox.StatusContainer(c.ID())
 		if err != nil {
@@ -303,11 +300,19 @@ func cleanupSandbox(id string) error {
 		if status.RootFs != "" {
 			rootfs[c.ID()] = status.RootFs
 		}
+		if oci.StateToOCIState(status.State) != oci.StateStopped {
+			err := vci.KillContainer(sandbox.ID(), c.ID(), syscall.SIGKILL, true)
+			if err != nil {
+				logrus.WithError(err).Warnf("failed to stop container %s", c.ID())
+				return err
+			}
+		}
 	}
 
+	status := sandbox.Status()
 	if oci.StateToOCIState(status.State) != oci.StateStopped {
 		if _, err := vci.StopSandbox(id); err != nil {
-			logrus.WithError(err).Warn("failed to stop kata container")
+			logrus.WithError(err).Warn("failed to stop sandbox")
 		}
 	}
 
