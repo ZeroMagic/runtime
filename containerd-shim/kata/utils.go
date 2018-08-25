@@ -14,9 +14,12 @@ import (
 	"time"
 
 	"context"
+	"github.com/containerd/containerd/mount"
 	cdshim "github.com/containerd/containerd/runtime/v2/shim"
 	vc "github.com/kata-containers/runtime/virtcontainers"
 	"github.com/kata-containers/runtime/virtcontainers/pkg/oci"
+	"github.com/sirupsen/logrus"
+	"syscall"
 )
 
 const (
@@ -109,4 +112,57 @@ func getAddress(ctx context.Context, bundlePath, id string) (string, error) {
 	}
 
 	return "", nil
+}
+
+func cleanupContainer(sid, cid, bundlePath string) error {
+	logrus.WithField("Service", "Cleanup").Infof("Cleanup container %s", cid)
+
+	rootfs := filepath.Join(bundlePath, "rootfs")
+	sandbox, err := vci.FetchSandbox(sid)
+	if err != nil {
+		return err
+	}
+
+	status, err := sandbox.StatusContainer(cid)
+	if err != nil {
+		logrus.WithError(err).Warnf("failed to get container %s status", cid)
+		return err
+	}
+
+	if oci.StateToOCIState(status.State) != oci.StateStopped {
+		err := vci.KillContainer(sid, cid, syscall.SIGKILL, true)
+		if err != nil {
+			logrus.WithError(err).Warnf("failed to kill container %s", cid)
+			return err
+		}
+	}
+
+	if _, err = vci.StopContainer(sid, cid); err != nil {
+		logrus.WithError(err).Warnf("failed to stop container %s", cid)
+		return err
+	}
+
+	if _, err := vci.DeleteContainer(sid, cid); err != nil {
+		logrus.WithError(err).Warnf("failed to remove container %s", cid)
+	}
+
+	if err := mount.UnmountAll(rootfs, 0); err != nil {
+		logrus.WithError(err).Warnf("failed to cleanup container %s rootfs %s", cid, rootfs)
+	}
+
+	if len(sandbox.GetAllContainers()) == 0 {
+		_, err = vci.StopSandbox(sid)
+		if err != nil {
+			logrus.WithError(err).Warnf("failed to stop sandbox %s", sid)
+			return err
+		}
+
+		_, err = vci.DeleteSandbox(sid)
+		if err != nil {
+			logrus.WithError(err).Warnf("failed to delete sandbox %s", sid)
+			return err
+		}
+	}
+
+	return nil
 }
