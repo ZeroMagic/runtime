@@ -49,7 +49,7 @@ func TestStartStartSandboxSuccess(t *testing.T) {
 	reqCreate := &taskAPI.CreateTaskRequest{
 		ID: testSandboxID,
 	}
-	s.containers[testSandboxID], err = newContainer(s, reqCreate, TestPid, "")
+	s.containers[testSandboxID], err = newContainer(s, reqCreate, TestPid, vc.PodSandbox)
 	assert.NoError(err)
 
 	reqStart := &taskAPI.StartRequest{
@@ -165,7 +165,7 @@ func TestStartStartContainerSucess(t *testing.T) {
 	reqCreate := &taskAPI.CreateTaskRequest{
 		ID: testContainerID,
 	}
-	s.containers[testContainerID], err = newContainer(s, reqCreate, TestPid, "")
+	s.containers[testContainerID], err = newContainer(s, reqCreate, TestPid, vc.PodContainer)
 	assert.NoError(err)
 
 	reqStart := &taskAPI.StartRequest{
