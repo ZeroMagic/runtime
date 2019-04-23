@@ -1,0 +1,28 @@
+{
+	"comment": "",
+	"ignore": "",
+	"package": [
+		{
+			"checksumSHA1": "2wZP1dc5Zy7P8POwWOh7sGGsNyI=",
+			"origin": "github.com/kata-containers/runtime/vendor/github.com/kata-containers/agent/pkg/types",
+			"path": "github.com/kata-containers/agent/pkg/types",
+			"revision": "605aaee2cb42b1d43367de3110c2b9df370a1a58",
+			"revisionTime": "2019-04-23T02:17:56Z"
+		},
+		{
+			"checksumSHA1": "y1qG776eWTTG+/7GjzWHjXs5Weg=",
+			"origin": "github.com/kata-containers/runtime/vendor/github.com/kata-containers/agent/protocols/client",
+			"path": "github.com/kata-containers/agent/protocols/client",
+			"revision": "605aaee2cb42b1d43367de3110c2b9df370a1a58",
+			"revisionTime": "2019-04-23T02:17:56Z"
+		},
+		{
+			"checksumSHA1": "pFaazoiJxQhDHyIBScBCWQ9NXzg=",
+			"origin": "github.com/kata-containers/runtime/vendor/github.com/kata-containers/agent/protocols/grpc",
+			"path": "github.com/kata-containers/agent/protocols/grpc",
+			"revision": "605aaee2cb42b1d43367de3110c2b9df370a1a58",
+			"revisionTime": "2019-04-23T02:17:56Z"
+		}
+	],
+	"rootPath": "github.com/kata-containers/runtime"
+}
