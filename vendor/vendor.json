@@ -4,28 +4,33 @@
 	"package": [
 		{
 			"checksumSHA1": "Lf8/MOqAhwn3jmyPq0bVqcyQ9Ts=",
-			"origin": "github.com/kata-containers/runtime/vendor/github.com/containerd/cgroups",
 			"path": "github.com/containerd/cgroups",
 			"revision": "1741ae0c1998a5fcdbb3c8b2a164113a8fabef89",
 			"revisionTime": "2019-04-17T03:03:34Z"
 		},
 		{
-			"checksumSHA1": "2wZP1dc5Zy7P8POwWOh7sGGsNyI=",
+			"checksumSHA1": "E0dpsrXEv0V4QEiYX/zvnczq8gE=",
 			"path": "github.com/kata-containers/agent/pkg/types",
-			"revision": "605aaee2cb42b1d43367de3110c2b9df370a1a58",
-			"revisionTime": "2019-04-23T02:17:56Z"
+			"revision": "455cb796fea84006f3434c9a96af9195121f20b2",
+			"revisionTime": "2019-04-22T13:39:19Z"
 		},
 		{
 			"checksumSHA1": "y1qG776eWTTG+/7GjzWHjXs5Weg=",
 			"path": "github.com/kata-containers/agent/protocols/client",
-			"revision": "605aaee2cb42b1d43367de3110c2b9df370a1a58",
-			"revisionTime": "2019-04-23T02:17:56Z"
+			"revision": "455cb796fea84006f3434c9a96af9195121f20b2",
+			"revisionTime": "2019-04-22T13:39:19Z"
 		},
 		{
-			"checksumSHA1": "pFaazoiJxQhDHyIBScBCWQ9NXzg=",
+			"checksumSHA1": "MUjtgtMLlvzI1QmyWB24K20nzEM=",
 			"path": "github.com/kata-containers/agent/protocols/grpc",
-			"revision": "605aaee2cb42b1d43367de3110c2b9df370a1a58",
-			"revisionTime": "2019-04-23T02:17:56Z"
+			"revision": "455cb796fea84006f3434c9a96af9195121f20b2",
+			"revisionTime": "2019-04-22T13:39:19Z"
+		},
+		{
+			"checksumSHA1": "vBSP7/tWgn3OPcBdS2JTy7A00QQ=",
+			"path": "github.com/kata-containers/agent/protocols/mockserver",
+			"revision": "455cb796fea84006f3434c9a96af9195121f20b2",
+			"revisionTime": "2019-04-22T13:39:19Z"
 		}
 	],
 	"rootPath": "github.com/kata-containers/runtime"
