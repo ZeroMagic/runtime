@@ -190,9 +190,25 @@ type CgroupStats struct {
 	HugetlbStats map[string]HugetlbStats `json:"hugetlb_stats,omitempty"`
 }
 
+// NetworkStats describe all network stats.
+type NetworkStats struct {
+	// Name is the name of the network interface.
+	Name string `json:"name,omitempty"`
+
+	RxBytes   uint64 `json:"RxBytes,omitempty"`
+	RxPackets uint64 `json:"RxPackets,omitempty"`
+	RxErrors  uint64 `json:"RxErrors,omitempty"`
+	RxDropped uint64 `json:"RxDropped,omitempty"`
+	TxBytes   uint64 `json:"TxBytes,omitempty"`
+	TxPackets uint64 `json:"TxPackets,omitempty"`
+	TxErrors  uint64 `json:"TxErrors,omitempty"`
+	TxDropped uint64 `json:"TxDropped,omitempty"`
+}
+
 // ContainerStats describes a container stats.
 type ContainerStats struct {
-	CgroupStats *CgroupStats
+	CgroupStats  *CgroupStats
+	NetworkStats []*NetworkStats
 }
 
 // ContainerResources describes container resources
